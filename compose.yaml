@@ -1,0 +1,41 @@
+services:
+  pgdb:
+    image: postgres:16.6-alpine3.20
+    container_name: live-pgdb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=kanban
+      - POSTGRES_USER=platform
+      - POSTGRES_PASSWORD=secret
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    volumes:
+      - live-pgdb:/var/lib/postgresql/data/
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: live-redis
+    restart: unless-stopped
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - live-redis:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+
+volumes:
+  live-pgdb:
+    driver: local
+  live-redis:
+    driver: local
+
