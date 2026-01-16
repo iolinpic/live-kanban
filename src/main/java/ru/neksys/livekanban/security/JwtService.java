@@ -38,11 +38,20 @@ public class JwtService {
         Claims claims = Jwts.parser().verifyWith(key).requireIssuer(props.security().jwt().issuer()).build().parseSignedClaims(token).getPayload();
 
         String email = claims.getSubject();
+        String uidStr = claims.get("uid", String.class);
+        String name = claims.get("name", String.class);
+
         @SuppressWarnings("unchecked") List<String> roles = claims.get("roles", List.class);
 
         var authorities = roles == null ? List.<SimpleGrantedAuthority>of() : roles.stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r)).toList();
 
+        var principal = new UserPrincipal(
+                uidStr != null ? UUID.fromString(uidStr) : null,
+                email,
+                name != null ? name : email,
+                roles != null ? roles : List.of()
+        );
         // principal можно сделать кастомным, но для старта норм:
-        return new UsernamePasswordAuthenticationToken(email, null, authorities);
+        return new UsernamePasswordAuthenticationToken(principal, null, authorities);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app")
 public record AppProperties(
         Security security,
-        Websocket websocket
+        Cors cors
 ) {
     public record Security(Jwt jwt) {
         public record Jwt(
@@ -19,6 +19,6 @@ public record AppProperties(
         }
     }
 
-    public record Websocket(List<String> allowedOrigins) {
+    public record Cors(List<String> allowedOrigins) {
     }
 }

@@ -42,7 +42,7 @@ app:
       issuer: "live-kanban"
       secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
       access-token-ttl: 15m
-  websocket:
+  cors:
     allowed-origins:
       - "http://localhost:3000"
       - "http://localhost:5173"
